@@ -1,8 +1,7 @@
 # KLExpandableTableView
 expandable tableview -ios
 
-1   //customised tableview which provides expandable cells function 
-   
+1.  //customised tableview which provides expandable cells function  
    KLExpandTableView *tbv_songs = [[KLExpandTableView alloc] initDefaultSettingWithTableViewStyle:KLTableviewStyleDefault inSuperView:self.view withDelegate:self];
    
     NSMutableArray *mar_items = [[NSMutableArray alloc] initWithCapacity:5];
@@ -18,7 +17,7 @@ expandable tableview -ios
     
     
     
-2 implement the following delegate datasource methods
+2.implement the following delegate datasource methods
 
 //number of expandable rows
 - (NSInteger)tableView:(KLExpandTableView *)tableView numberOfSubRowsAtIndexPath:(NSInteger)section;
@@ -32,4 +31,4 @@ expandable tableview -ios
 //number of table view sections, i.e.  number of objects
 - (NSInteger)numberOfSectionsInTableView:(KLExpandTableView *)tableView;
 
-3 demo uses 'KlTableItem' as example obj, you can use your own object as replacement, however, 'isExpandable' is required to implement the collaspe feature.
+3. demo uses 'KlTableItem' as example obj, you can use your own object as replacement, however, 'isExpandable' is required to implement the collaspe feature.
