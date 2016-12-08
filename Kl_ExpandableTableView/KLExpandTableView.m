@@ -10,6 +10,7 @@
 
 #define CELL_HEIGHT 60
 #define TABLEVIEW_VIEW_NAME @"tbv_main"
+#define PROPERTY_EXPANDABLE @"isExpandable"
 
 #define IOS_VERSION [[[UIDevice currentDevice] systemVersion] floatValue]
 
@@ -159,51 +160,65 @@
 }
 
 
-//expand clicked cell, remove others
+//collapse all other cells except selected one
 - (void)resetOtherExpandableCell {
-    [_arr_items enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+    [_arr_items enumerateObjectsUsingBlock:^(id item, NSUInteger index, BOOL *stop) {
         if(index != ip_selectedIndex.section) {
-            KlTableItem *item = (KlTableItem *)obj;
-            if(item.isExpandable && item != nil){
-                item.isExpandable = FALSE;
-                NSMutableArray* rowToDelete = [[NSMutableArray alloc] init];
-                for(int i = 1; i < [_arr_items count] + 1; i++) {
-                    NSIndexPath* indexPathToDelete= [NSIndexPath indexPathForRow:i inSection:index];
-                    [rowToDelete addObject:indexPathToDelete];
-                }
-                [self deleteRowsAtIndexPaths:rowToDelete withRowAnimation:UITableViewRowAnimationTop];
+            if ([item respondsToSelector:NSSelectorFromString(PROPERTY_EXPANDABLE)] && item != NULL) {
+                [self removeCollapseCells:item atIndex:index];
+            }
+            else {
+                return ;
             }
         }
     }];
 }
 
-//remove all expandable cells
+//collapse all cells
 - (void)resetDatacellStatusToUnexpandable {
     [self beginUpdates];
-    [_arr_items enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-        if([obj isKindOfClass:[KlTableItem class]]) {
-            KlTableItem *item = (KlTableItem *)obj;
-            if(item.isExpandable && item != nil){
-                item.isExpandable = FALSE;
-                NSMutableArray* rowToDelete = [[NSMutableArray alloc] init];
-                for(int i = 1; i < [_arr_items count] + 1; i++) {
-                    NSIndexPath* indexPathToDelete= [NSIndexPath indexPathForRow:i inSection:index];
-                    [rowToDelete addObject:indexPathToDelete];
-                }
-                [self deleteRowsAtIndexPaths:rowToDelete withRowAnimation:UITableViewRowAnimationFade];
-            }
+    [_arr_items enumerateObjectsUsingBlock:^(id item, NSUInteger index, BOOL *stop) {
+        if ([item respondsToSelector:NSSelectorFromString(PROPERTY_EXPANDABLE)] && item != NULL) {
+            [self removeCollapseCells:item atIndex:index];
+        }
+        else {
+            return ;
         }
     }];
     [self endUpdates];
+}
+
+//collapse cells
+- (void)removeCollapseCells:(id)item atIndex:(NSInteger)index{
+    if([[item valueForKey:PROPERTY_EXPANDABLE] intValue] == 1) {
+        [item setValue:@"0" forKey:PROPERTY_EXPANDABLE];
+        NSMutableArray* rowToDelete = [[NSMutableArray alloc] init];
+        for(int i = 1; i < [_arr_items count] + 1; i++) {
+            NSIndexPath* indexPathToDelete= [NSIndexPath indexPathForRow:i inSection:index];
+            [rowToDelete addObject:indexPathToDelete];
+        }
+        [self deleteRowsAtIndexPaths:rowToDelete withRowAnimation:UITableViewRowAnimationFade];
+    }
 }
 
 //expand the selected cell
 - (void)didSelectOptionMoreInIndexPathAtRow:(NSIndexPath *)indexPath {
     [self beginUpdates];
     if(indexPath.row  == 0) {
-        KlTableItem *item = [_arr_items objectAtIndex:indexPath.section];
-        item.isExpandable = !item.isExpandable;
+        id item = [_arr_items objectAtIndex:indexPath.section];
         
+        if ([item respondsToSelector:NSSelectorFromString(PROPERTY_EXPANDABLE)]) {
+            if([[item valueForKey:PROPERTY_EXPANDABLE] intValue] == 1) {
+                [item setValue:@"0" forKey:PROPERTY_EXPANDABLE];
+            }
+            else {
+                [item setValue:@"1" forKey:PROPERTY_EXPANDABLE];
+            }
+        }
+        else {
+            return ;
+        }
+   
         ip_selectedIndex = indexPath;
         
         NSMutableArray* rowToInsert = [[NSMutableArray alloc] init];
@@ -213,13 +228,15 @@
             [rowToInsert addObject:indexPathToInsert];
         }
         
-        if(item.isExpandable) {
-            [self insertRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
+        if ([item respondsToSelector:NSSelectorFromString(PROPERTY_EXPANDABLE)]) {
+            if([[item valueForKey:PROPERTY_EXPANDABLE] intValue] == 1) {
+                [self insertRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
+            }
+            else {
+                [self deleteRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
+            }
         }
-        else {
-            [self deleteRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
-        }
-        
+
         [self resetOtherExpandableCell];
     }
     [self endUpdates];
@@ -227,5 +244,6 @@
         [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:indexPath.section] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
+
 
 @end

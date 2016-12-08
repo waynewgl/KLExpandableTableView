@@ -68,7 +68,6 @@
     return [arr_items count];
 }
 
-
 #pragma mark  expandable table view delegate
 - (void)selectItemAtIndex:(NSIndexPath *)indexPath {
     NSLog(@"clicking item %@", indexPath);
