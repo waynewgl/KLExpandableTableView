@@ -11,6 +11,6 @@
 @interface KlTableItem : NSObject
 
 @property(nonatomic, assign) BOOL isExpandable;//required
-//@property(nonatomic, strong) NSArray *arr_subItems;
+@property(nonatomic, strong) NSArray *arr_subItems;//optional
 
 @end

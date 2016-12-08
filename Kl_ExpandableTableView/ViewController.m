@@ -29,6 +29,13 @@
     //note: object KlTableItem can be as customised as you want, however, property 'isExpandable' is always necessary.
     for(int i=0; i<10; i++) {
         KlTableItem *item = [[KlTableItem alloc] init];
+        
+        NSMutableArray *mar_subItem = [[NSMutableArray alloc] initWithCapacity:5];
+        for(int i=0; i<4; i++) {
+            [mar_subItem addObject:[NSString stringWithFormat:@"%@_%d", @"cell", i]];
+        }
+        
+        item.arr_subItems = mar_subItem;
         [mar_items addObject:item];
     }
     
@@ -45,7 +52,7 @@
     
     KlTableItem *item = [arr_items objectAtIndex:indexPath.section];
     if(item.isExpandable) {
-        cell.textLabel.text = [NSString stringWithFormat:@"%@-%td", @"expandable cell", indexPath.row];
+        cell.textLabel.text = [NSString stringWithFormat:@"%@-%@", @"expandable ", item.arr_subItems[indexPath.row - 1]];
     }
     else {
         cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", indexPath.section];
@@ -61,16 +68,7 @@
 - (NSInteger)tableView:(KLExpandTableView *)tableView numberOfSubRowsAtIndexPath:(NSInteger)section {
     KlTableItem *item = [arr_items objectAtIndex:section];
     if(item.isExpandable) {
-        switch (section) {
-            case 0:
-                return 1 + 5; //first row  +  inserted 5 rows
-            case 1:
-                return 1 + 2;
-            case 2:
-                return 1 + 3;
-            default:
-                return 1 + 6;
-        }
+        return [item.arr_subItems count] + 1;
     }
     else {
         return 1;
@@ -83,7 +81,13 @@
 
 #pragma mark  expandable table view delegate
 - (void)tableView:(KLExpandTableView *)tableView didSelectSubRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"clicking item %@", indexPath);
+    KlTableItem *item = [arr_items objectAtIndex:indexPath.section];
+    if(indexPath.row != 0) {//click collaspe cells
+        NSLog(@"clicking item  %@ - %@",indexPath, item.arr_subItems[indexPath.row - 1]);
+    }else {
+        NSLog(@"clicking item  %@",indexPath);
+    }
+    
 }
 
 // Dispose of any resources that can be recreated.
