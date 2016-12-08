@@ -150,7 +150,7 @@
         if(cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
         }
-        cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", indexPath.section];
+        cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", (long)indexPath.section];
         if(indexPath.row == 1) {
             cell.textLabel.text = @"expandable cell";
         }

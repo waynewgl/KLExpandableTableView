@@ -56,7 +56,7 @@
     if(indexPath.row != 0) {//collaspe cells
         cell.textLabel.text = [NSString stringWithFormat:@"%@-%@", @"expandable ", item.arr_subItems[indexPath.row - 1]];
     }else {
-        cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", indexPath.section];
+        cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", (long)indexPath.section];
     }
     
     return  cell;
