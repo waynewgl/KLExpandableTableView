@@ -12,7 +12,6 @@
 
 @interface ViewController ()<KlExpandTableViewDelegate> {
     NSArray *arr_items;
-    IBOutlet UIView *v_sub;
 }
 
 @end
