@@ -42,11 +42,15 @@
     if(cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", indexPath.section];
     
-    if(indexPath.row != 0) {
+    KlTableItem *item = [arr_items objectAtIndex:indexPath.section];
+    if(item.isExpandable) {
         cell.textLabel.text = [NSString stringWithFormat:@"%@-%td", @"expandable cell", indexPath.row];
     }
+    else {
+        cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", indexPath.section];
+    }
+    
     return  cell;
 }
 
@@ -59,7 +63,7 @@
     if(item.isExpandable) {
         switch (section) {
             case 0:
-                return 1 + 5; //first row +  inserted rows
+                return 1 + 5; //first row  +  inserted 5 rows
             case 1:
                 return 1 + 2;
             case 2:
@@ -78,10 +82,9 @@
 }
 
 #pragma mark  expandable table view delegate
-- (void)selectItemAtIndex:(NSIndexPath *)indexPath {
+- (void)tableView:(KLExpandTableView *)tableView didSelectSubRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"clicking item %@", indexPath);
 }
-
 
 // Dispose of any resources that can be recreated.
 - (void)didReceiveMemoryWarning {

@@ -26,7 +26,6 @@ typedef enum {
 
 @optional
 - (void)tableView:(KLExpandTableView *)tableView didSelectSubRowAtIndexPath:(NSIndexPath *)indexPath;
-- (void)selectItemAtIndex:(NSIndexPath *)indexPath;
 
 @end
 

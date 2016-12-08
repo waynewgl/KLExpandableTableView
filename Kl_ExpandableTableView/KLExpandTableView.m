@@ -119,8 +119,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self didSelectOptionMoreInIndexPathAtRow:indexPath];
-    if([self.expandDelegate respondsToSelector:@selector(selectItemAtIndex:)]) {
-        [self.expandDelegate selectItemAtIndex:indexPath];
+
+    if([self.expandDelegate respondsToSelector:@selector(tableView:didSelectSubRowAtIndexPath:)]) {
+        [self.expandDelegate tableView:self didSelectSubRowAtIndexPath:indexPath];
     }
 }
 
