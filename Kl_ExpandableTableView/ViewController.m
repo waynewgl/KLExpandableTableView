@@ -26,6 +26,7 @@
    
     NSMutableArray *mar_items = [[NSMutableArray alloc] initWithCapacity:5];
     
+    //test data
     //note: object KlTableItem can be as customised as you want, however, property 'isExpandable' is always necessary.
     for(int i=0; i<10; i++) {
         KlTableItem *item = [[KlTableItem alloc] init];
@@ -40,6 +41,7 @@
     }
     
     arr_items = mar_items;
+    
     [tbv_songs reloadCurrentDataWithNewArray:arr_items];
 }
 
@@ -51,10 +53,10 @@
     }
     
     KlTableItem *item = [arr_items objectAtIndex:indexPath.section];
-    if(item.isExpandable) {
+    
+    if(indexPath.row != 0) {//collaspe cells
         cell.textLabel.text = [NSString stringWithFormat:@"%@-%@", @"expandable ", item.arr_subItems[indexPath.row - 1]];
-    }
-    else {
+    }else {
         cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", indexPath.section];
     }
     
@@ -87,7 +89,6 @@
     }else {
         NSLog(@"clicking item  %@",indexPath);
     }
-    
 }
 
 // Dispose of any resources that can be recreated.
