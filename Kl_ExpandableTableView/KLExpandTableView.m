@@ -18,6 +18,8 @@
     KlTableviewStyle        tableViewStyle;
     NSMutableDictionary     *mdic_bindView;
     NSIndexPath             *ip_selectedIndex;
+    NSMutableArray          *rowToInsert;
+    NSInteger               iSubrowsCount;
 }
 
 @property(nonatomic, strong)NSArray *arr_items;
@@ -99,7 +101,9 @@
         [self.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format_view_v
                                                                                options:0
                                                                                metrics:nil
-                                                                                 views:mdic_bindView]];     
+                                                                                 views:mdic_bindView]];
+        
+        rowToInsert = [[NSMutableArray alloc] initWithCapacity:5];
     }
 }
 
@@ -191,13 +195,14 @@
 //collapse cells
 - (void)removeCollapseCells:(id)item atIndex:(NSInteger)index{
     if([[item valueForKey:PROPERTY_EXPANDABLE] intValue] == 1) {
-        [item setValue:@"0" forKey:PROPERTY_EXPANDABLE];
         NSMutableArray* rowToDelete = [[NSMutableArray alloc] init];
-        for(int i = 1; i < [_arr_items count] + 1; i++) {
+        for(int i = 1; i < [self.expandDelegate tableView:self numberOfSubRowsAtIndexPath:index]; i++) {
             NSIndexPath* indexPathToDelete= [NSIndexPath indexPathForRow:i inSection:index];
             [rowToDelete addObject:indexPathToDelete];
         }
         [self deleteRowsAtIndexPaths:rowToDelete withRowAnimation:UITableViewRowAnimationFade];
+        
+        [item setValue:@"0" forKey:PROPERTY_EXPANDABLE];//reset expandable to 0, thus return  row number of  1
     }
 }
 
@@ -218,21 +223,32 @@
         else {
             return ;
         }
+        
+        if(![self.expandDelegate respondsToSelector:@selector(tableView:numberOfSubRowsAtIndexPath:)]) {
+            return ;
+        }
    
         ip_selectedIndex = indexPath;
         
-        NSMutableArray* rowToInsert = [[NSMutableArray alloc] init];
-        
-        for (NSUInteger i = 1; i < [_arr_items count] + 1; i++) {
-            NSIndexPath* indexPathToInsert = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
-            [rowToInsert addObject:indexPathToInsert];
-        }
+        [rowToInsert removeAllObjects];
         
         if ([item respondsToSelector:NSSelectorFromString(PROPERTY_EXPANDABLE)]) {
             if([[item valueForKey:PROPERTY_EXPANDABLE] intValue] == 1) {
+                //keep the added row number, need to remove the exact number of row afterwards.
+                iSubrowsCount = [self.expandDelegate tableView:self numberOfSubRowsAtIndexPath:indexPath.section];
+
+                for (NSUInteger i = 1; i < iSubrowsCount; i++) {
+                    NSIndexPath* indexPathToInsert = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
+                    [rowToInsert addObject:indexPathToInsert];
+                }
                 [self insertRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
             }
             else {
+                for (NSUInteger i = 1; i < iSubrowsCount; i++) { //remove exact number of rows insterted before
+                    NSIndexPath* indexPathToInsert = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
+                    [rowToInsert addObject:indexPathToInsert];
+                }
+
                 [self deleteRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
             }
         }

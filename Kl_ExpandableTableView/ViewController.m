@@ -54,10 +54,19 @@
     return 80;
 }
 
-- (NSInteger)tableView:(KLExpandTableView *)tableView numberOfSubRowsAtIndexPath:(NSInteger )section {
-    KlTableItem *song = [arr_items objectAtIndex:section];
-    if(song.isExpandable) {
-        return [arr_items count] + 1;//row 0 is the visible cell, others are expandable cells
+- (NSInteger)tableView:(KLExpandTableView *)tableView numberOfSubRowsAtIndexPath:(NSInteger)section {
+    KlTableItem *item = [arr_items objectAtIndex:section];
+    if(item.isExpandable) {
+        switch (section) {
+            case 0:
+                return 1 + 5; //first row +  inserted rows
+            case 1:
+                return 1 + 2;
+            case 2:
+                return 1 + 3;
+            default:
+                return 1 + 6;
+        }
     }
     else {
         return 1;
